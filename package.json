@@ -1,12 +1,12 @@
 {
   "name": "three-css3d",
-  "version": "0.0.1",
+  "version": "1.0.1",
   "description": "Yet another typescript port of Three.js CSS3DRenderer, with small tweaks and enchancements.",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
+  "types": "lib/src",
   "sideEffects": false,
   "scripts": {
-    "dev": "echo dev",
     "lint": "gts lint",
     "clean": "gts clean",
     "build": "rimraf ./lib && rollup -c build/rollup.config.js",
