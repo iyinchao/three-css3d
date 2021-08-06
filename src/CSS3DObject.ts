@@ -9,7 +9,7 @@ export class CSS3DObject extends Object3D {
   constructor(element: HTMLElement) {
     super();
 
-    this.element = element || document.createElement('div');
+    this.element = element;
     this.element.style.position = 'absolute';
     this.element.style.pointerEvents = 'auto';
 
@@ -26,7 +26,13 @@ export class CSS3DObject extends Object3D {
     });
   }
 
-  copy(source: CSS3DObject, recursive: boolean) {
+  /**
+   * Copy content from another CSS3DObject.
+   * @param source Source CSS3DObject
+   * @param recursive
+   * @returns CSS3DObject
+   */
+  copy(source: CSS3DObject, recursive?: boolean) {
     Object3D.prototype.copy.call(this, source, recursive);
 
     this.element = source.element.cloneNode(true) as HTMLElement;

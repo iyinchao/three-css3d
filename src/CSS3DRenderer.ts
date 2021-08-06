@@ -17,7 +17,13 @@ interface ObjectCache {
 }
 
 export class CSS3DRenderer extends EventDispatcher {
-  public domElement: HTMLElement;
+  /**
+   * Container element of CSS3D Scene.
+   */
+  public readonly domElement: HTMLElement;
+  /**
+   * Camera element of CSS3D transform.
+   */
   public readonly cameraElement: HTMLElement;
 
   private _width = 0;
@@ -32,6 +38,9 @@ export class CSS3DRenderer extends EventDispatcher {
     camera: {fov: 0, style: ''},
     objects: new WeakMap<CSS3DObject, ObjectCache>(),
   };
+
+  private epsilon = (value: number) => (Math.abs(value) < 1e-10 ? 0 : value);
+
   private getDistanceToSquared = (function () {
     const a = new Vector3();
     const b = new Vector3();
@@ -44,49 +53,42 @@ export class CSS3DRenderer extends EventDispatcher {
     };
   })();
 
-  constructor() {
-    super();
+  private zOrder(scene: Scene) {
+    const {cache} = this;
 
-    const domElement = document.createElement('div');
-    this.domElement = domElement;
-    domElement.style.overflow = 'hidden';
+    const items: {
+      object: CSS3DObject;
+      data: ObjectCache;
+    }[] = [];
 
-    const cameraElement = document.createElement('div');
-    this.cameraElement = cameraElement;
-    cameraElement.style.transformStyle = 'preserve-3d';
+    scene.traverse(obj => {
+      const object = obj as CSS3DObject;
+      if (cache.objects.has(object)) {
+        items.push({
+          object,
+          data: cache.objects.get(object)!,
+        });
+      }
+    });
 
-    domElement.appendChild(cameraElement);
+    const order = items.sort(
+      (a, b) =>
+        // Only for IE, property is guaranteed to exist
+        a.data.distanceToCameraSquared! - b.data.distanceToCameraSquared!
+    );
+    const zMax = order.length;
+    order.forEach((info, index) => {
+      const {object} = info;
 
-    this.isIE = /Trident/i.test(navigator.userAgent);
+      (object as CSS3DObject).element.style.zIndex = `${zMax - index}`;
+    });
   }
 
-  setClearColor() {
-    /* noop */
-  }
-
-  getSize() {
-    return {
-      width: this._width,
-      height: this._height,
-    };
-  }
-
-  setSize(width: number, height: number) {
-    this._width = width;
-    this._height = height;
-    this._widthHalf = this._width / 2;
-    this._heightHalf = this._height / 2;
-
-    this.domElement.style.width = `${width}px`;
-    this.domElement.style.height = `${height}px`;
-
-    this.cameraElement.style.width = `${width}px`;
-    this.cameraElement.style.height = `${height}px`;
-  }
-
-  epsilon = (value: number) => (Math.abs(value) < 1e-10 ? 0 : value);
-
-  getCameraCSSMatrix = (martrix: Matrix4, camera: Camera, fov: number) => {
+  private getCameraCSSMatrix = (
+    martrix: Matrix4,
+    camera: Camera,
+    fov: number
+  ) => {
     const {epsilon} = this;
     const {elements} = martrix;
 
@@ -122,7 +124,7 @@ export class CSS3DRenderer extends EventDispatcher {
     return `translateZ(${fov}px)${matrixCSS}`;
   };
 
-  getObjectCSSMatrix = (matrix: Matrix4, cameraCSSMatrix: string) => {
+  private getObjectCSSMatrix = (matrix: Matrix4, cameraCSSMatrix: string) => {
     const {epsilon} = this;
     const {elements} = matrix;
 
@@ -161,35 +163,53 @@ export class CSS3DRenderer extends EventDispatcher {
     return `translate(-50%,-50%)${matrix3d}`;
   };
 
-  zOrder(scene: Scene) {
-    const {cache} = this;
+  constructor() {
+    super();
 
-    const items: {
-      object: CSS3DObject;
-      data: ObjectCache;
-    }[] = [];
+    const domElement = document.createElement('div');
+    this.domElement = domElement;
+    domElement.style.overflow = 'hidden';
 
-    scene.traverse(obj => {
-      const object = obj as CSS3DObject;
-      if (cache.objects.has(object)) {
-        items.push({
-          object,
-          data: cache.objects.get(object)!,
-        });
-      }
-    });
+    const cameraElement = document.createElement('div');
+    this.cameraElement = cameraElement;
+    cameraElement.style.transformStyle = 'preserve-3d';
 
-    const order = items.sort(
-      (a, b) =>
-        // Only for IE, property is guaranteed to exist
-        a.data.distanceToCameraSquared! - b.data.distanceToCameraSquared!
-    );
-    const zMax = order.length;
-    order.forEach((info, index) => {
-      const {object} = info;
+    domElement.appendChild(cameraElement);
 
-      (object as CSS3DObject).element.style.zIndex = `${zMax - index}`;
-    });
+    this.isIE = /Trident/i.test(navigator.userAgent);
+  }
+
+  setClearColor() {
+    /* noop */
+  }
+
+  /**
+   * Get the size of container element.
+   * @returns
+   */
+  getSize() {
+    return {
+      width: this._width,
+      height: this._height,
+    };
+  }
+
+  /**
+   * Set the size of container element.
+   * @param width The width of element
+   * @param height The height of element
+   */
+  setSize(width: number, height: number) {
+    this._width = width;
+    this._height = height;
+    this._widthHalf = this._width / 2;
+    this._heightHalf = this._height / 2;
+
+    this.domElement.style.width = `${width}px`;
+    this.domElement.style.height = `${height}px`;
+
+    this.cameraElement.style.width = `${width}px`;
+    this.cameraElement.style.height = `${height}px`;
   }
 
   renderObject = (
@@ -283,7 +303,12 @@ export class CSS3DRenderer extends EventDispatcher {
     }
   };
 
-  render(scene: Scene, camera: Camera | OrthographicCamera) {
+  /**
+   * Update CSS3D scene.
+   * @param scene Three.js scene
+   * @param camera Three.js camera
+   */
+  render(scene: Scene, camera: Camera) {
     const {
       _heightHalf,
       _widthHalf,

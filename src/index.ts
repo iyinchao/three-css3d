@@ -1,7 +1,7 @@
 /**
  * A typescript port of Three.js CSS3DRenderer
  *
- * @author iyinchao<yincharles@126.com>
+ * @author iyinchao<yincharles@163.com>
  *
  * Based on:
  * https://github.com/mrdoob/three.js/blob/r126/examples/js/renderers/CSS3DRenderer.js
