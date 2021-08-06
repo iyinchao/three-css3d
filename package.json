@@ -1,0 +1,43 @@
+{
+  "name": "three-css3d",
+  "version": "0.0.1",
+  "description": "Yet another typescript port of Three.js CSS3DRenderer, with small tweaks and enchancements.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "echo dev",
+    "lint": "gts lint",
+    "clean": "gts clean",
+    "compile": "tsc",
+    "fix": "gts fix",
+    "prepare": "npm run compile",
+    "pretest": "npm run compile",
+    "posttest": "npm run lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iyinchao/three-css3d-renderer-ts.git"
+  },
+  "keywords": [
+    "three",
+    "3D",
+    "css",
+    "transform",
+    "renderer"
+  ],
+  "author": "iyinchao <yincharles@126.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/iyinchao/three-css3d-renderer-ts/issues"
+  },
+  "homepage": "https://github.com/iyinchao/three-css3d-renderer-ts#readme",
+  "peerDependencies": {
+    "three": ">=0.80.0"
+  },
+  "devDependencies": {
+    "@types/node": "^14.11.2",
+    "@types/three": "^0.129.1",
+    "gts": "^3.1.0",
+    "three": "^0.129.0",
+    "typescript": "^4.0.3"
+  }
+}
