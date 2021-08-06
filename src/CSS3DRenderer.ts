@@ -11,8 +11,13 @@ import {
 import {CSS3DObject} from './CSS3DObject';
 import {CSS3DSprite} from './CSS3DSprite';
 
+interface ObjectCache {
+  style: string;
+  distanceToCameraSquared?: number;
+}
+
 export class CSS3DRenderer extends EventDispatcher {
-  public readonly domElement: HTMLElement;
+  public domElement: HTMLElement;
   public readonly cameraElement: HTMLElement;
 
   private _width = 0;
@@ -25,7 +30,7 @@ export class CSS3DRenderer extends EventDispatcher {
   private isIE: boolean;
   private cache = {
     camera: {fov: 0, style: ''},
-    objects: new WeakMap<CSS3DObject, any>(),
+    objects: new WeakMap<CSS3DObject, ObjectCache>(),
   };
   private getDistanceToSquared = (function () {
     const a = new Vector3();
@@ -159,23 +164,28 @@ export class CSS3DRenderer extends EventDispatcher {
   zOrder(scene: Scene) {
     const {cache} = this;
 
-    const items: any[] = [];
+    const items: {
+      object: CSS3DObject;
+      data: ObjectCache;
+    }[] = [];
 
     scene.traverse(obj => {
       const object = obj as CSS3DObject;
       if (cache.objects.has(object)) {
         items.push({
           object,
-          data: cache.objects.get(object),
+          data: cache.objects.get(object)!,
         });
       }
     });
 
     const order = items.sort(
-      (a, b) => a.data.distanceToCameraSquared - b.data.distanceToCameraSquared
+      (a, b) =>
+        // Only for IE, property is guaranteed to exist
+        a.data.distanceToCameraSquared! - b.data.distanceToCameraSquared!
     );
     const zMax = order.length;
-    order.forEach((info: any, index) => {
+    order.forEach((info, index) => {
       const {object} = info;
 
       (object as CSS3DObject).element.style.zIndex = `${zMax - index}`;
@@ -198,6 +208,7 @@ export class CSS3DRenderer extends EventDispatcher {
       getDistanceToSquared,
     } = this;
     if (object instanceof CSS3DObject) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (object.onBeforeRender as any)(this, scene, camera);
 
       let style;
@@ -208,11 +219,12 @@ export class CSS3DRenderer extends EventDispatcher {
         matrix.copy(camera.matrixWorldInverse);
         // Get the inverse transforms
         matrix.transpose();
+
+        // NOTE: The euler interp is probably cause Gimbal lock
         // Convert the rotation part to euler to merge by ratio
         // this._spriteEuler.setFromRotationMatrix(matrix); // camera inverse part
         // this._objectEuler.setFromRotationMatrix(object.matrixWorld); // object rotation part
 
-        // // NOTE: FIXME: The interp is probably cause Gimbal lock
         // this._spriteEuler.x = this._spriteEuler.x * object.spriteRatio + this._objectEuler.x * (1 - object.spriteRatio);
         // this._spriteEuler.y = this._spriteEuler.y * object.spriteRatio + this._objectEuler.y * (1 - object.spriteRatio);
         // this._spriteEuler.z = this._spriteEuler.z * object.spriteRatio + this._objectEuler.z * (1 - object.spriteRatio);
@@ -232,7 +244,6 @@ export class CSS3DRenderer extends EventDispatcher {
         matrix.elements[15] = 1;
 
         // save current computed sprite matrix
-        // eslint-disable-next-line no-param-reassign
         object.spriteMatrixWorld.copy(matrix);
 
         style = getObjectCSSMatrix(matrix, cameraCSSMatrix);
@@ -246,7 +257,7 @@ export class CSS3DRenderer extends EventDispatcher {
       if (cachedObject === undefined || cachedObject.style !== style) {
         element.style.transform = style;
 
-        const objectData: any = {style};
+        const objectData: ObjectCache = {style};
         cache.objects.set(object, objectData);
 
         if (isIE) {
@@ -263,6 +274,7 @@ export class CSS3DRenderer extends EventDispatcher {
         cameraElement.appendChild(element);
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (object.onAfterRender as any)(this, scene, camera);
     }
 
