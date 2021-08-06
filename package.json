@@ -1,10 +1,10 @@
 {
   "name": "three-css3d",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Yet another typescript port of Three.js CSS3DRenderer, with small tweaks and enchancements.",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
-  "types": "lib/src",
+  "types": "lib/src/index.d.ts",
   "sideEffects": false,
   "scripts": {
     "lint": "gts lint",
