@@ -1,6 +1,6 @@
 # three-css3d
 
-> A typescript port of Three.js CSS3DRenderer, with small enhancements.
+> A typescript port of Three.js CSS3DRenderer, with small tweaks and enchancements.
 
 Originally from:  
 http://www.emagix.net/academic/mscs-project/item/camera-sync-with-css3-and-webgl-threejs

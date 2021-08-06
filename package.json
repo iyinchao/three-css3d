@@ -1,7 +1,7 @@
 {
   "name": "three-css3d",
   "version": "1.0.2",
-  "description": "Yet another typescript port of Three.js CSS3DRenderer, with small tweaks and enchancements.",
+  "description": "A typescript port of Three.js CSS3DRenderer, with small tweaks and enchancements.",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
   "types": "lib/src/index.d.ts",
@@ -28,7 +28,7 @@
     "sprite",
     "renderer"
   ],
-  "author": "iyinchao <yincharles@126.com>",
+  "author": "iyinchao <yincharles@163.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/iyinchao/three-css3d/issues"
