@@ -7,6 +7,7 @@ import {
   OrthographicCamera,
   Vector3,
   Quaternion,
+  Color,
 } from 'three';
 import {CSS3DObject} from './CSS3DObject';
 import {CSS3DSprite} from './CSS3DSprite';
@@ -163,10 +164,10 @@ export class CSS3DRenderer extends EventDispatcher {
     return `translate(-50%,-50%)${matrix3d}`;
   };
 
-  constructor() {
+  constructor(element?: HTMLElement) {
     super();
 
-    const domElement = document.createElement('div');
+    const domElement = element || document.createElement('div');
     this.domElement = domElement;
     domElement.style.overflow = 'hidden';
 
@@ -179,8 +180,8 @@ export class CSS3DRenderer extends EventDispatcher {
     this.isIE = /Trident/i.test(navigator.userAgent);
   }
 
-  setClearColor() {
-    /* noop */
+  setClearColor(color: Color, alpha = 1) {
+    this.domElement.style.backgroundColor = `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha})`;
   }
 
   /**
