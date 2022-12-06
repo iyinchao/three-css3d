@@ -35,7 +35,7 @@
   },
   "homepage": "https://github.com/iyinchao/three-css3d#readme",
   "peerDependencies": {
-    "three": ">=0.80.0"
+    "three": ">=0.144.0"
   },
   "devDependencies": {
     "@types/node": "^14.11.2",
