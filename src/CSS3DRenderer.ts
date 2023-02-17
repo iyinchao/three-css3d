@@ -329,7 +329,11 @@ export class CSS3DRenderer extends EventDispatcher {
       cache.camera.fov = fov;
     }
 
-    if (scene.matrixAutoUpdate === true) scene.updateMatrixWorld();
+    // compatible for old version of three.js
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if ((scene as any).autoUpdate === true || scene.matrixAutoUpdate === true) {
+      scene.updateMatrixWorld();
+    }
     if (camera.parent === null) camera.updateMatrixWorld();
 
     const cameraCSSMatrix = getCameraCSSMatrix(
