@@ -330,9 +330,9 @@ export class CSS3DRenderer extends EventDispatcher {
     }
 
     // compatible for old version of three.js
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (
       (scene.matrixAutoUpdate && scene.matrixAutoUpdate === true) ||
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (scene as any).autoUpdate === true
     ) {
       scene.updateMatrixWorld();
