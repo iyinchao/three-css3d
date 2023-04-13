@@ -331,7 +331,10 @@ export class CSS3DRenderer extends EventDispatcher {
 
     // compatible for old version of three.js
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if ((scene.matrixAutoUpdate && scene.matrixAutoUpdate === true) ?? (scene as any).autoUpdate === true) {
+    if (
+      (scene.matrixAutoUpdate && scene.matrixAutoUpdate === true) ||
+      (scene as any).autoUpdate === true
+    ) {
       scene.updateMatrixWorld();
     }
     if (camera.parent === null) camera.updateMatrixWorld();
