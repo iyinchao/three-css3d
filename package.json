@@ -1,6 +1,6 @@
 {
   "name": "three-css3d",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A typescript port of Three.js CSS3DRenderer, with small tweaks and enchancements.",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
